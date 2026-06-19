@@ -208,7 +208,6 @@ def poll_bot():
         })
         if not result.get("ok"):
             desc = result.get("description", "")
-            # Long-poll timeout is normal — just retry
             if "timed out" in desc.lower() or result.get("error_code") == 409:
                 threading.Event().wait(1)
                 continue
@@ -221,157 +220,157 @@ def poll_bot():
             offset = update_id + 1
 
             cb = update.get("callback_query")
-                if cb:
-                    cid = str(cb["from"]["id"])
-                    cb_id = cb["id"]
-                    data = cb.get("data", "")
-                    username = cb["from"].get("first_name", "Foydalanuvchi")
+            if cb:
+                cid = str(cb["from"]["id"])
+                cb_id = cb["id"]
+                data = cb.get("data", "")
+                username = cb["from"].get("first_name", "Foydalanuvchi")
 
-                    api_call("answerCallbackQuery", {"callback_query_id": cb_id})
-
-                    if cid == CHAT_ID:
-                        if data == "bot_users":
-                            total = len(load_users())
-                            api_call("sendMessage", {
-                                "chat_id": cid,
-                                "text": (
-                                    f"\U0001f465 <b>Bot foydalanuvchilari</b>\n\n"
-                                    f"\U0001f539 Jami qurilmalar: <b>{total}</b>\n\n"
-                                    f"\U0001f4c5 Saytga kirgan har bir yangi qurilma "
-                                    f"avtomatik tarzda ro'yxatga olinadi."
-                                ),
-                                "parse_mode": "HTML",
-                            })
-                        elif data == "site_users":
-                            api_call("sendMessage", {
-                                "chat_id": cid,
-                                "text": (
-                                    "\U0001f465 <b>Sayt foydalanuvchilari</b>\n\n"
-                                    "Hozircha bu funksiya ishlab chiqilmoqda \U0001f6a7"
-                                ),
-                                "parse_mode": "HTML",
-                            })
-                        elif data == "messages":
-                            api_call("sendMessage", {
-                                "chat_id": cid,
-                                "text": (
-                                    "\U0001f4ac <b>Xabarlar</b>\n\n"
-                                    "Barcha kelgan xabarlar shu chatda ko'rinadi.\n\n"
-                                    "Yangi xabar kelganda sizga bildirishnoma yuboriladi."
-                                ),
-                                "parse_mode": "HTML",
-                            })
-                        elif data == "add_admin":
-                            api_call("sendMessage", {
-                                "chat_id": cid,
-                                "text": (
-                                    "\U0001f451 <b>Admin tayinlash</b>\n\n"
-                                    "Yangi admin qo'shish uchun uning Telegram ID sini yuboring.\n\n"
-                                    "Misol: <code>123456789</code>"
-                                ),
-                                "parse_mode": "HTML",
-                            })
-                    else:
-                        api_call("sendMessage", {
-                            "chat_id": cid,
-                            "text": "\U0000274c Bu tugmalar faqat admin uchun.",
-                        })
-
-                    log.info("Callback from %s: %s", username, data)
-                    continue
-
-                msg = update.get("message")
-                if not msg:
-                    continue
-
-                # Skip bot's own outgoing messages
-                sender = msg.get("from", {})
-                if sender.get("is_bot"):
-                    continue
-
-                chat = msg.get("chat", {})
-                cid = str(chat.get("id", ""))
-                text = msg.get("text", "")
-                entities = msg.get("entities", [])
-                username = sender.get("first_name", "Foydalanuvchi")
-
-                if not cid:
-                    continue
-
-                # ── Premium emoji ID detector (admin only) ──
-                if cid == CHAT_ID and entities:
-                    emoji_entities = [
-                        e for e in entities
-                        if e.get("type") == "custom_emoji" and e.get("custom_emoji_id")
-                    ]
-                    if emoji_entities:
-                        lines = ["\U0001f9f0 <b>Premium emoji ID lar:</b>\n"]
-                        for e in emoji_entities:
-                            eid = e["custom_emoji_id"]
-                            offset = e["offset"]
-                            length = e["length"]
-                            emoji_char = text[offset:offset + length]
-                            lines.append(f"<code>{eid}</code> \u2014 {emoji_char}")
-                        lines.append(
-                            "\n\U0001f447 Bot kodida ishlatish:\n"
-                            "<code>&lt;tg-emoji emoji-id=\"...\"&gt;\U0001f44d&lt;/tg-emoji&gt;</code>"
-                        )
-                        api_call("sendMessage", {
-                            "chat_id": cid,
-                            "text": "\n".join(lines),
-                            "parse_mode": "HTML",
-                        })
-                        log.info("Sent emoji IDs to admin")
-                        continue
-
-                # ── /start command ──
-                if text != "/start":
-                    continue
+                api_call("answerCallbackQuery", {"callback_query_id": cb_id})
 
                 if cid == CHAT_ID:
-                    reply_text = (
-                        "\U0001f44b <b>Assalomu alaykum, Admin!</b>\n\n"
-                        "\u2728 Bot muvaffaqiyatli ishga tushdi.\n"
-                        "Veb saytdan yuborilgan xabarlar shu chatga keladi."
-                    )
-                    keyboard = {
-                        "inline_keyboard": [
-                            [
-                                {"text": "\U0001f465 Bot foydalanuvchilar", "callback_data": "bot_users"},
-                                {"text": "\U0001f464 Sayt foydalanuvchilari", "callback_data": "site_users"},
-                            ],
-                            [
-                                {"text": "\U0001f4ac Xabarlar", "callback_data": "messages"},
-                                {"text": "\U0001f451 Admin tayinlash", "callback_data": "add_admin"},
-                            ],
-                        ]
-                    }
+                    if data == "bot_users":
+                        total = len(load_users())
+                        api_call("sendMessage", {
+                            "chat_id": cid,
+                            "text": (
+                                f"\U0001f465 <b>Bot foydalanuvchilari</b>\n\n"
+                                f"\U0001f539 Jami qurilmalar: <b>{total}</b>\n\n"
+                                f"\U0001f4c5 Saytga kirgan har bir yangi qurilma "
+                                f"avtomatik tarzda ro'yxatga olinadi."
+                            ),
+                            "parse_mode": "HTML",
+                        })
+                    elif data == "site_users":
+                        api_call("sendMessage", {
+                            "chat_id": cid,
+                            "text": (
+                                "\U0001f465 <b>Sayt foydalanuvchilari</b>\n\n"
+                                "Hozircha bu funksiya ishlab chiqilmoqda \U0001f6a7"
+                            ),
+                            "parse_mode": "HTML",
+                        })
+                    elif data == "messages":
+                        api_call("sendMessage", {
+                            "chat_id": cid,
+                            "text": (
+                                "\U0001f4ac <b>Xabarlar</b>\n\n"
+                                "Barcha kelgan xabarlar shu chatda ko'rinadi.\n\n"
+                                "Yangi xabar kelganda sizga bildirishnoma yuboriladi."
+                            ),
+                            "parse_mode": "HTML",
+                        })
+                    elif data == "add_admin":
+                        api_call("sendMessage", {
+                            "chat_id": cid,
+                            "text": (
+                                "\U0001f451 <b>Admin tayinlash</b>\n\n"
+                                "Yangi admin qo'shish uchun uning Telegram ID sini yuboring.\n\n"
+                                "Misol: <code>123456789</code>"
+                            ),
+                            "parse_mode": "HTML",
+                        })
                 else:
-                    reply_text = (
-                        f"\U0001f44b <b>Assalomu alaykum, {username}!</b>\n\n"
-                        "\U0001f916 Bu <b>Ozodbek Usmonqulov</b> ning portfolio web-sayti "
-                        "uchun yordamchi bot.\n\n"
-                        "\u2728 Quyidagi tugmalar orqali veb saytni ochishingiz "
-                        "yoki buyurtma berishingiz mumkin:"
-                    )
-                    keyboard = {
-                        "inline_keyboard": [
-                            [
-                                {"text": "\U0001f310 Veb saytni ochish", "url": SITE_URL},
-                            ],
-                            [
-                                {"text": "\U0001f4dd Buyurtma berish", "url": ADMIN_TG},
-                            ],
-                        ]
-                    }
+                    api_call("sendMessage", {
+                        "chat_id": cid,
+                        "text": "\U0000274c Bu tugmalar faqat admin uchun.",
+                    })
 
-                api_call("sendMessage", {
-                    "chat_id": cid,
-                    "text": reply_text,
-                    "parse_mode": "HTML",
-                    "reply_markup": keyboard,
-                })
-                log.info("Replied to /start from %s (chat_id=%s)", username, cid)
+                log.info("Callback from %s: %s", username, data)
+                continue
+
+            msg = update.get("message")
+            if not msg:
+                continue
+
+            # Skip bot's own outgoing messages
+            sender = msg.get("from", {})
+            if sender.get("is_bot"):
+                continue
+
+            chat = msg.get("chat", {})
+            cid = str(chat.get("id", ""))
+            text = msg.get("text", "")
+            entities = msg.get("entities", [])
+            username = sender.get("first_name", "Foydalanuvchi")
+
+            if not cid:
+                continue
+
+            # ── Premium emoji ID detector (admin only) ──
+            if cid == CHAT_ID and entities:
+                emoji_entities = [
+                    e for e in entities
+                    if e.get("type") == "custom_emoji" and e.get("custom_emoji_id")
+                ]
+                if emoji_entities:
+                    lines = ["\U0001f9f0 <b>Premium emoji ID lar:</b>\n"]
+                    for e in emoji_entities:
+                        eid = e["custom_emoji_id"]
+                        offset = e["offset"]
+                        length = e["length"]
+                        emoji_char = text[offset:offset + length]
+                        lines.append(f"<code>{eid}</code> \u2014 {emoji_char}")
+                    lines.append(
+                        "\n\U0001f447 Bot kodida ishlatish:\n"
+                        "<code>&lt;tg-emoji emoji-id=\"...\"&gt;\U0001f44d&lt;/tg-emoji&gt;</code>"
+                    )
+                    api_call("sendMessage", {
+                        "chat_id": cid,
+                        "text": "\n".join(lines),
+                        "parse_mode": "HTML",
+                    })
+                    log.info("Sent emoji IDs to admin")
+                    continue
+
+            # ── /start command ──
+            if text != "/start":
+                continue
+
+            if cid == CHAT_ID:
+                reply_text = (
+                    "\U0001f44b <b>Assalomu alaykum, Admin!</b>\n\n"
+                    "\u2728 Bot muvaffaqiyatli ishga tushdi.\n"
+                    "Veb saytdan yuborilgan xabarlar shu chatga keladi."
+                )
+                keyboard = {
+                    "inline_keyboard": [
+                        [
+                            {"text": "\U0001f465 Bot foydalanuvchilar", "callback_data": "bot_users"},
+                            {"text": "\U0001f464 Sayt foydalanuvchilari", "callback_data": "site_users"},
+                        ],
+                        [
+                            {"text": "\U0001f4ac Xabarlar", "callback_data": "messages"},
+                            {"text": "\U0001f451 Admin tayinlash", "callback_data": "add_admin"},
+                        ],
+                    ]
+                }
+            else:
+                reply_text = (
+                    f"\U0001f44b <b>Assalomu alaykum, {username}!</b>\n\n"
+                    "\U0001f916 Bu <b>Ozodbek Usmonqulov</b> ning portfolio web-sayti "
+                    "uchun yordamchi bot.\n\n"
+                    "\u2728 Quyidagi tugmalar orqali veb saytni ochishingiz "
+                    "yoki buyurtma berishingiz mumkin:"
+                )
+                keyboard = {
+                    "inline_keyboard": [
+                        [
+                            {"text": "\U0001f310 Veb saytni ochish", "url": SITE_URL},
+                        ],
+                        [
+                            {"text": "\U0001f4dd Buyurtma berish", "url": ADMIN_TG},
+                        ],
+                    ]
+                }
+
+            api_call("sendMessage", {
+                "chat_id": cid,
+                "text": reply_text,
+                "parse_mode": "HTML",
+                "reply_markup": keyboard,
+            })
+            log.info("Replied to /start from %s (chat_id=%s)", username, cid)
 
         threading.Event().wait(1)
 
