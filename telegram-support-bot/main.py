@@ -37,7 +37,7 @@ env = load_env()
 PORT = int(os.environ.get("PORT") or env.get("PORT", "3001"))
 BOT_TOKEN = os.environ.get("BOT_TOKEN") or env.get("BOT_TOKEN", "")
 CHAT_ID = os.environ.get("CHAT_ID") or env.get("CHAT_ID", "")
-SITE_URL = os.environ.get("SITE_URL") or env.get("SITE_URL", "http://localhost:5173")
+SITE_URL = os.environ.get("SITE_URL") or env.get("SITE_URL", "https://full-steck.uz")
 ADMIN_TG = os.environ.get("ADMIN_TG") or env.get("ADMIN_TG", "https://t.me/anonim_crypton")
 
 TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"

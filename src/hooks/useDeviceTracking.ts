@@ -16,7 +16,7 @@ export default function useDeviceTracking() {
       localStorage.setItem('device_id', deviceId)
     }
 
-    fetch(`${import.meta.env.VITE_BOT_URL || 'http://localhost:3001'}/api/track`, {
+    fetch(`${import.meta.env.VITE_BOT_URL || 'https://my-portfolio-wb95.onrender.com'}/api/track`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
