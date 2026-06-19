@@ -21,7 +21,9 @@ export default async function handler(req, res) {
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    res.status(500).json({ error: 'Supabase not configured on server' });
+    res.status(500).json({
+      error: 'Supabase not configured on server. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel Dashboard.'
+    });
     return;
   }
 
@@ -41,7 +43,12 @@ export default async function handler(req, res) {
           .select('*')
           .order('createdAt', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          // Table might not exist yet — return empty array instead of crashing
+          console.warn('Supabase GET error (returning []):', error.message);
+          res.status(200).json([]);
+          return;
+        }
         res.status(200).json(data);
         break;
       }

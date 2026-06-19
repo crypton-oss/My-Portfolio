@@ -41,7 +41,7 @@ SITE_URL = os.environ.get("SITE_URL") or env.get("SITE_URL", "http://localhost:5
 ADMIN_TG = os.environ.get("ADMIN_TG") or env.get("ADMIN_TG", "https://t.me/anonim_crypton")
 
 TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
-TIMEOUT = 10
+TIMEOUT = 30
 USERS_FILE = os.path.join(BASE_DIR, "users.json")
 
 # ── Users JSON storage ──────────────────────────────────────────
@@ -203,15 +203,24 @@ def poll_bot():
     while True:
         result = api_call("getUpdates", {
             "offset": offset,
-            "timeout": 10,
+            "timeout": 25,
             "allowed_updates": ["message", "callback_query"],
         })
-        if result.get("ok"):
-            for update in result.get("result", []):
-                update_id = update["update_id"]
-                offset = update_id + 1
+        if not result.get("ok"):
+            desc = result.get("description", "")
+            # Long-poll timeout is normal — just retry
+            if "timed out" in desc.lower() or result.get("error_code") == 409:
+                threading.Event().wait(1)
+                continue
+            log.warning("getUpdates failed: %s", desc)
+            threading.Event().wait(3)
+            continue
 
-                cb = update.get("callback_query")
+        for update in result.get("result", []):
+            update_id = update["update_id"]
+            offset = update_id + 1
+
+            cb = update.get("callback_query")
                 if cb:
                     cid = str(cb["from"]["id"])
                     cb_id = cb["id"]
