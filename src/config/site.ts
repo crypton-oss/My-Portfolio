@@ -7,7 +7,7 @@ export const siteConfig = {
     'Backend Dasturchi',
     'UI/UX Dizayner',
   ],
-  cvUrl: '/my-resume.pdf',
+  cvUrl: '/my-pdf-resume.pdf',
   social: {
     github: 'https://github.com/crypton-oss',
     linkedin: 'https://linkedin.com',

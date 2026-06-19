@@ -8,6 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+__pycache__
+*.pyc
+telegram-support-bot/users.json
 dist
 dist-ssr
 *.local
