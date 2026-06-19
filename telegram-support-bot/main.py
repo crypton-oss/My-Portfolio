@@ -242,11 +242,23 @@ def poll_bot():
                             "parse_mode": "HTML",
                         })
                     elif data == "site_users":
+                        users = load_users()
+                        today = datetime.now().strftime("%Y-%m-%d")
+                        today_count = sum(
+                            1 for u in users
+                            if u.get("lastSeen", "").startswith(today)
+                        )
+                        unique_months = len(set(
+                            u.get("lastSeen", "")[:7] for u in users
+                        ))
+                        total = len(users)
                         api_call("sendMessage", {
                             "chat_id": cid,
                             "text": (
-                                "\U0001f465 <b>Sayt foydalanuvchilari</b>\n\n"
-                                "Hozircha bu funksiya ishlab chiqilmoqda \U0001f6a7"
+                                "\U0001f4ca <b>Sayt statistikasi</b>\n\n"
+                                f"\U0001f539 Jami qurilmalar: <b>{total}</b>\n"
+                                f"\U0001f539 Bugun tashrif buyurgan: <b>{today_count}</b>\n"
+                                f"\U0001f539 Faol oylar: <b>{unique_months}</b>"
                             ),
                             "parse_mode": "HTML",
                         })
