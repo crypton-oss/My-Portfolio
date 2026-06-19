@@ -1,0 +1,7 @@
+.app {
+  min-height: 100svh;
+  background: var(--page-bg);
+  color: var(--text-primary);
+  transition: background-color 0.4s ease, color 0.4s ease;
+  overflow-x: hidden;
+}

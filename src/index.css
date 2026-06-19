@@ -1,0 +1,71 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --accent: #ffc107;
+  --page-bg: #000;
+  --text-primary: #fff;
+  --text-secondary: rgba(255, 255, 255, 0.72);
+  --navbar-bg: rgba(0, 0, 0, 0.85);
+  --navbar-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --icon-color: #fff;
+  --toggle-bg: rgba(255, 255, 255, 0.08);
+  --toggle-active-bg: rgba(255, 255, 255, 0.18);
+  --toggle-active-color: #fff;
+  --btn-bg: rgba(255, 255, 255, 0.06);
+  --btn-border: rgba(255, 255, 255, 0.12);
+  --btn-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --tech-icon-bg: rgba(255, 255, 255, 0.06);
+  --tech-icon-border: rgba(255, 255, 255, 0.1);
+  --tech-icon-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme='light'] {
+  --page-bg: #f0eee6;
+  --text-primary: #000;
+  --text-secondary: rgba(0, 0, 0, 0.65);
+  --navbar-bg: rgba(255, 255, 255, 0.92);
+  --navbar-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --icon-color: #000;
+  --toggle-bg: rgba(0, 0, 0, 0.06);
+  --toggle-active-bg: rgba(0, 0, 0, 0.1);
+  --toggle-active-color: #000;
+  --btn-bg: rgba(0, 0, 0, 0.04);
+  --btn-border: rgba(0, 0, 0, 0.1);
+  --btn-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --tech-icon-bg: rgba(0, 0, 0, 0.04);
+  --tech-icon-border: rgba(0, 0, 0, 0.08);
+  --tech-icon-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: #000;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100svh;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}

@@ -1,0 +1,25 @@
+.text-animate {
+  margin: 0;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: -0.02em;
+}
+
+.text-animate--blur-in {
+  animation: text-blur-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes text-blur-in {
+  0% {
+    opacity: 0;
+    filter: blur(16px);
+    transform: translateY(12px);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}

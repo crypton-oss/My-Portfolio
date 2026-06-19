@@ -1,0 +1,169 @@
+.liquid-btn {
+  position: relative;
+  cursor: pointer;
+  border-radius: 10px;
+  font-weight: 700;
+  border: none;
+  font-family: inherit;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: var(--icon-color, #d4a017);
+  color: #ffffff;
+}
+
+.liquid-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 5;
+}
+
+/* SIZES */
+.liquid-btn--sm {
+  padding: 8px 16px;
+  font-size: 12px;
+}
+
+.liquid-btn--default {
+  padding: 12px 24px;
+  font-size: 14px;
+  min-width: 140px;
+}
+
+.liquid-btn--lg {
+  padding: 14px 28px;
+  font-size: 15px;
+  min-width: 160px;
+}
+
+.liquid-btn--xl {
+  padding: 16px 36px;
+  font-size: 16px;
+  min-width: 180px;
+}
+
+/* VARIANTS */
+.liquid-btn--outline {
+  background-color: transparent;
+  color: var(--text-color, #000000);
+  border: 2px solid var(--card-border, rgba(0, 0, 0, 0.1));
+}
+
+.liquid-btn--outline:hover {
+  background-color: var(--sidebar-link-hover, rgba(0, 0, 0, 0.04));
+}
+
+.liquid-btn--secondary {
+  background-color: var(--card-bg, rgba(0, 0, 0, 0.04));
+  color: var(--text-color, #000000);
+  border: 1px solid var(--card-border, rgba(0, 0, 0, 0.08));
+}
+
+.liquid-btn--secondary:hover {
+  filter: brightness(0.95);
+}
+
+.liquid-btn--ghost {
+  background-color: transparent;
+  color: var(--text-color, #000000);
+}
+
+.liquid-btn--ghost:hover {
+  background-color: var(--sidebar-link-hover, rgba(0, 0, 0, 0.04));
+}
+
+/* Liquid filling wave */
+.liquid-wave-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.liquid-wave-element {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -190%;
+  left: -50%;
+  border-radius: 38%;
+  background-color: rgba(255, 255, 255, 0.35);
+  animation: liquid-spin 10s linear infinite;
+}
+
+.wave-1 {
+  animation-duration: 8s;
+  opacity: 0.8;
+}
+
+.wave-2 {
+  animation-duration: 12s;
+  border-radius: 40%;
+  opacity: 0.5;
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+@keyframes liquid-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Spinner and check */
+.liquid-spinner {
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+}
+
+.liquid-spinner svg {
+  width: 100%;
+  height: 100%;
+}
+
+.liquid-success-check {
+  width: 16px;
+  height: 16px;
+  color: #ffffff;
+}
+
+.liquid-success-check svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Glow Variant */
+.liquid-btn--glow {
+  box-shadow: 0 0 15px var(--icon-color, #d4a017);
+}
+
+.liquid-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 80%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.liquid-btn--glow:hover .liquid-glow {
+  opacity: 1;
+}
+
+/* Success State Colors */
+.liquid-btn--success {
+  background-color: #28a745 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}

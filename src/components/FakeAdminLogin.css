@@ -1,0 +1,268 @@
+.fake-admin__card {
+  position: relative;
+  max-height: 90vh;
+}
+
+/* ── Face Scan Area ── */
+.fake-admin__face-scan {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.fake-admin__face-frame {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  animation: fake-pulse-border 2s ease-in-out infinite;
+}
+
+.fake-admin__face-icon {
+  width: 64px;
+  height: 64px;
+  color: rgba(255, 255, 255, 0.25);
+  z-index: 1;
+}
+
+.fake-admin__scan-line {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ff453a, transparent);
+  box-shadow: 0 0 12px rgba(255, 69, 58, 0.6);
+  animation: fake-scan 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+.fake-admin__face-label {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+/* ── Error Messages (inside card) ── */
+.fake-admin__errors {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.fake-admin__errors::-webkit-scrollbar {
+  width: 3px;
+}
+
+.fake-admin__errors::-webkit-scrollbar-thumb {
+  background: rgba(255, 69, 58, 0.3);
+  border-radius: 2px;
+}
+
+.fake-admin__error-msg {
+  margin: 0;
+  font-size: 11px;
+  color: #ff453a;
+  font-weight: 500;
+  text-align: center;
+  animation: fake-error-in 0.25s ease-out;
+  line-height: 1.4;
+  padding: 2px 0;
+}
+
+/* ════════════════════════════════════════
+   MELTDOWN — Full screen error flood
+   ════════════════════════════════════════ */
+.fake-admin--meltdown .ios-screen__header {
+  position: relative;
+  z-index: 10;
+  animation: fake-glitch-text 0.15s infinite;
+}
+
+.ios-screen__header--glitch .ios-screen__time,
+.ios-screen__header--glitch .ios-screen__date {
+  color: #ff453a;
+  text-shadow: 0 0 10px rgba(255, 69, 58, 0.8);
+}
+
+.fake-admin__meltdown {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fake-meltdown-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fake-admin__meltdown-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(80, 0, 0, 0.6), rgba(0, 0, 0, 0.95));
+  pointer-events: none;
+  animation: fake-overlay-pulse 0.5s ease-in-out infinite alternate;
+}
+
+.fake-admin__meltdown-errors {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 40px 24px;
+  max-width: 1000px;
+  max-height: 80vh;
+  overflow-y: auto;
+  perspective: 800px;
+}
+
+.fake-admin__meltdown-msg {
+  font-size: clamp(11px, 2vw, 16px);
+  color: #ff453a;
+  font-weight: 700;
+  font-family: 'Courier New', Courier, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  animation: fake-meltdown-error-in 0.3s ease-out, fake-error-flicker 2s infinite;
+  text-shadow:
+    0 0 4px rgba(255, 69, 58, 0.6),
+    1px 1px 0 rgba(255, 0, 0, 0.3),
+    -1px -1px 0 rgba(255, 0, 0, 0.3);
+  opacity: 0.9;
+}
+
+.fake-admin__meltdown-btn {
+  position: relative;
+  z-index: 10;
+  margin-top: 32px;
+  padding: 14px 32px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 69, 58, 0.3);
+  background: rgba(255, 69, 58, 0.1);
+  color: #ff453a;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  animation: fake-btn-pulse 1.5s ease-in-out infinite;
+}
+
+.fake-admin__meltdown-btn:hover {
+  background: rgba(255, 69, 58, 0.2);
+  border-color: rgba(255, 69, 58, 0.5);
+  transform: scale(1.05);
+}
+
+/* ── Animations ── */
+@keyframes fake-pulse-border {
+  0%, 100% {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 rgba(255, 69, 58, 0);
+  }
+  50% {
+    border-color: rgba(255, 69, 58, 0.3);
+    box-shadow: 0 0 20px rgba(255, 69, 58, 0.1);
+  }
+}
+
+@keyframes fake-scan {
+  0% { top: 10px; opacity: 0; }
+  10% { opacity: 1; }
+  50% { top: 100px; }
+  90% { opacity: 1; }
+  100% { top: 10px; opacity: 0; }
+}
+
+@keyframes fake-error-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fake-meltdown-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fake-overlay-pulse {
+  from {
+    opacity: 0.8;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fake-meltdown-error-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.5) rotateX(30deg);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0) scale(1) rotateX(0deg);
+  }
+}
+
+@keyframes fake-error-flicker {
+  0%, 100% { opacity: 0.9; }
+  3% { opacity: 0.3; }
+  6% { opacity: 0.9; }
+  10% { opacity: 0.5; }
+  12% { opacity: 0.9; }
+  50% { opacity: 0.9; }
+  53% { opacity: 0.2; }
+  55% { opacity: 0.9; }
+}
+
+@keyframes fake-glitch-text {
+  0% { transform: translate(0); }
+  10% { transform: translate(-1px, 1px); }
+  20% { transform: translate(1px, -1px); }
+  30% { transform: translate(-1px, -1px); }
+  40% { transform: translate(1px, 1px); }
+  50% { transform: translate(0); }
+  60% { transform: translate(1px, 0); }
+  70% { transform: translate(-1px, 0); }
+  80% { transform: translate(0, 1px); }
+  90% { transform: translate(0, -1px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes fake-btn-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(255, 69, 58, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 69, 58, 0.2);
+  }
+}

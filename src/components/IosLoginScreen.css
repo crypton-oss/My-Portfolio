@@ -1,0 +1,223 @@
+.ios-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #ffffff;
+  background: #000000;
+}
+
+.ios-screen__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 48px;
+  animation: ios-fade-in-down 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ios-screen__time {
+  margin: 0;
+  font-size: 80px;
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.ios-screen__date {
+  margin: 8px 0 0;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  opacity: 0.7;
+  color: #ffffff;
+}
+
+.ios-login-card {
+  width: 100%;
+  max-width: 340px;
+  padding: 40px 28px 32px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: ios-fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ios-login-card__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.ios-login-card__title {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.ios-login-card__subtitle {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.5;
+  font-weight: 400;
+  color: #ffffff;
+}
+
+.ios-login-card__form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ios-login-card__input-group {
+  width: 100%;
+}
+
+.ios-login-card__input {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  outline: none;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.ios-login-card__input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 400;
+}
+
+.ios-login-card__input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.ios-login-card__error {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #ff453a;
+  font-weight: 500;
+  text-align: center;
+}
+
+.ios-login-card__btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: none;
+  color: #000000;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-top: 8px;
+}
+
+.ios-login-card__btn:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.ios-login-card__btn:active {
+  transform: scale(0.97);
+}
+
+.ios-login-card__footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 28px;
+}
+
+.ios-login-card__footer-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.2s ease;
+}
+
+.ios-login-card__footer-btn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Shake Animation for Wrong Passcode */
+.ios-login-card--shake {
+  animation: ios-shake 0.4s ease-in-out;
+}
+
+@keyframes ios-shake {
+  0%, 100% { transform: translateX(0); }
+  15%, 45%, 75% { transform: translateX(-8px); }
+  30%, 60%, 90% { transform: translateX(8px); }
+}
+
+/* Entrance Animations */
+@keyframes ios-fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ios-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-height: 600px) {
+  .ios-screen {
+    padding: 20px 24px;
+    justify-content: flex-start;
+    padding-top: 40px;
+  }
+  .ios-screen__header {
+    margin-bottom: 24px;
+  }
+  .ios-screen__time {
+    font-size: 50px;
+  }
+  .ios-screen__date {
+    font-size: 16px;
+  }
+  .ios-login-card {
+    padding: 24px 24px 20px;
+  }
+}
