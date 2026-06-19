@@ -1,6 +1,4 @@
-import { connectToDatabase } from './lib/mongodb.js';
-
-const COLLECTION = 'projects';
+import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req, res) {
   const origin = req.headers.origin || 'http://localhost:5173';
@@ -15,10 +13,20 @@ export default async function handler(req, res) {
     return;
   }
 
-  const isAdminOp = req.method === 'POST' || req.method === 'PATCH' || req.method === 'DELETE';
   const authHeader = req.headers.authorization || '';
   const apiKey = authHeader.replace('Bearer ', '');
   const adminApiKey = process.env.ADMIN_API_KEY;
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    res.status(500).json({ error: 'Supabase not configured on server' });
+    return;
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const isAdminOp = req.method === 'POST' || req.method === 'PATCH' || req.method === 'DELETE';
 
   if (isAdminOp && adminApiKey && apiKey !== adminApiKey) {
     res.status(401).json({ error: 'Unauthorized' });
@@ -26,17 +34,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { db } = await connectToDatabase();
-    const collection = db.collection(COLLECTION);
-
     switch (req.method) {
       case 'GET': {
-        const projects = await collection
-          .find({})
-          .sort({ createdAt: -1 })
-          .toArray();
-        // Convert ObjectId to string
-        const data = projects.map((p) => ({ ...p, _id: p._id.toString() }));
+        const { data, error } = await supabase
+          .from('projects')
+          .select('*')
+          .order('createdAt', { ascending: false });
+
+        if (error) throw error;
         res.status(200).json(data);
         break;
       }
@@ -47,29 +52,41 @@ export default async function handler(req, res) {
           ...body,
           createdAt: body.createdAt || new Date().toISOString(),
         };
-        await collection.insertOne(project);
-        res.status(201).json(project);
+        const { data, error } = await supabase
+          .from('projects')
+          .insert(project)
+          .select()
+          .single();
+
+        if (error) throw error;
+        res.status(201).json(data);
         break;
       }
 
       case 'PATCH': {
         const { id, hidden } = req.body;
-        if (!id) {
-          res.status(400).json({ error: 'id required' });
-          return;
-        }
-        await collection.updateOne({ id }, { $set: { hidden } });
+        if (!id) { res.status(400).json({ error: 'id required' }); return; }
+
+        const { error } = await supabase
+          .from('projects')
+          .update({ hidden })
+          .eq('id', id);
+
+        if (error) throw error;
         res.status(200).json({ success: true });
         break;
       }
 
       case 'DELETE': {
         const { id } = req.body;
-        if (!id) {
-          res.status(400).json({ error: 'id required' });
-          return;
-        }
-        await collection.deleteOne({ id });
+        if (!id) { res.status(400).json({ error: 'id required' }); return; }
+
+        const { error } = await supabase
+          .from('projects')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
         res.status(200).json({ success: true });
         break;
       }
@@ -82,3 +99,7 @@ export default async function handler(req, res) {
     res.status(500).json({ error: err.message || 'Internal server error' });
   }
 }
+
+export const config = {
+  runtime: 'nodejs',
+};

@@ -1,3 +1,4 @@
+import { supabase } from '../lib/supabase';
 import { siteConfig } from '../config/site';
 
 export interface ProjectData {
@@ -21,8 +22,16 @@ function apiHeaders(): Record<string, string> {
   return headers;
 }
 
-/** Get all projects — tries API first, falls back to IndexedDB/localStorage */
+/** Get all projects — Supabase direct (public), fallback IndexedDB */
 export async function getAllProjects(): Promise<ProjectData[]> {
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('createdAt', { ascending: false });
+    if (!error && data) return data;
+  }
+  // Fallback: try serverless API
   try {
     const res = await fetch(`${API_BASE}/projects`, { headers: apiHeaders() });
     if (res.ok) return await res.json();
@@ -30,7 +39,7 @@ export async function getAllProjects(): Promise<ProjectData[]> {
   return getProjectsFromLocal();
 }
 
-/** Add a project */
+/** Add a project — via API (service_role), fallback local */
 export async function addProject(project: ProjectData): Promise<void> {
   try {
     const res = await fetch(`${API_BASE}/projects`, {
@@ -75,7 +84,6 @@ export async function getProjectById(id: string): Promise<ProjectData | undefine
   return projects.find((p) => p.id === id);
 }
 
-/** Initialize (no-op for API mode) */
 export async function initializeProjectsDB(): Promise<void> {}
 
 // ── Local fallback (IndexedDB + localStorage) ──
