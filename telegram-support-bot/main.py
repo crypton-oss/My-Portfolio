@@ -330,8 +330,7 @@ def poll_bot():
 
                 if cid == CHAT_ID:
                     reply_text = (
-                        '<tg-emoji emoji-id="5210952530676505717">\U0001f44b</tg-emoji> '
-                        "<b>Assalomu alaykum, Admin!</b>\n\n"
+                        "\U0001f44b <b>Assalomu alaykum, Admin!</b>\n\n"
                         "\u2728 Bot muvaffaqiyatli ishga tushdi.\n"
                         "Veb saytdan yuborilgan xabarlar shu chatga keladi."
                     )
