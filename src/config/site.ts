@@ -14,6 +14,8 @@ export const siteConfig = {
     telegram: 'https://t.me/anonim_crypton',
     discord: 'https://discord.com',
   },
+  botUrl: import.meta.env.VITE_BOT_URL || 'http://localhost:3001',
+  apiUrl: import.meta.env.VITE_API_URL || '/api',
 
 } as const
 

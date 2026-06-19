@@ -1,54 +1,166 @@
-/** * IndexedDB wrapper for Ozobek Usmonqulov Portfolio projects. * Provides persistent storage for project data including images, * with automatic fallback to localStorage if IndexedDB is unavailable. */
-const DB_NAME = 'ozobek_usmonqulov_portfolio_db';
-const DB_VERSION = 1;
-const STORE_NAME = 'projects';
-export interface ProjectData {  id: string;  name: string;  description: string;  image: string;       // base64 data URL or external URL
-  languages: Array<{ id: string; name: string }>;  hideCode: boolean;  repoFullName: string;  createdAt?: string;  hidden?: boolean;    
-// hidden from public view
+import { siteConfig } from '../config/site';
+
+export interface ProjectData {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  languages: Array<{ id: string; name: string }>;
+  hideCode: boolean;
+  repoFullName: string;
+  createdAt?: string;
+  hidden?: boolean;
 }
-/** * Initialize database and ensure it's ready (no seed data). */
-export async function initializeProjectsDB(): Promise<void> {
-  const INIT_FLAG = 'ozobek_usmonqulov_portfolio_initialized';
-  localStorage.setItem(INIT_FLAG, '1');
+
+const API_BASE = siteConfig.apiUrl || '/api';
+
+function apiHeaders(): Record<string, string> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const key = import.meta.env.VITE_ADMIN_API_KEY;
+  if (key) headers['Authorization'] = `Bearer ${key}`;
+  return headers;
 }
-function openDB(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);    request.onupgradeneeded = () => {
-      const db = request.result;      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });        store.createIndex('createdAt', 'createdAt', { unique: false });      }    };    request.onsuccess = () => resolve(request.result);    request.onerror = () => reject(request.error);  });}/** * Get all projects from the database, sorted by createdAt (newest first). */
+
+/** Get all projects — tries API first, falls back to IndexedDB/localStorage */
 export async function getAllProjects(): Promise<ProjectData[]> {
   try {
-    const db = await openDB();    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readonly');      const store = tx.objectStore(STORE_NAME);      const request = store.getAll();      request.onsuccess = () => {
-        const projects = request.result as ProjectData[];        // Sort newest first
-projects.sort((a, b) => {
-          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;          return dateB - dateA;
-});        resolve(projects);      };      request.onerror = () => reject(request.error);    });  } catch {    // Fallback to localStorage
-return getProjectsFromLocalStorage();
-}}/** * Add a new project to the database. */
+    const res = await fetch(`${API_BASE}/projects`, { headers: apiHeaders() });
+    if (res.ok) return await res.json();
+  } catch { /* fall through */ }
+  return getProjectsFromLocal();
+}
+
+/** Add a project */
 export async function addProject(project: ProjectData): Promise<void> {
   try {
-    const db = await openDB();    await new Promise<void>((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');      const store = tx.objectStore(STORE_NAME);      store.put(project);      tx.oncomplete = () => {        syncProjectToLocalStorage(project);        resolve();      };      tx.onerror = () => reject(tx.error);    });  } catch {    syncProjectToLocalStorage(project);
-}}function syncProjectToLocalStorage(project: ProjectData): void {
-  const projects = getProjectsFromLocalStorage();  const existing = projects.findIndex((p) => p.id === project.id);  if (existing >= 0) {    projects[existing] = project;  } else {    projects.unshift(project);  }  localStorage.setItem('ozobek_usmonqulov_portfolio_projects', JSON.stringify(projects));
-}/** * Remove a project from the database. */
+    const res = await fetch(`${API_BASE}/projects`, {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify(project),
+    });
+    if (res.ok) return;
+  } catch { /* fall through */ }
+  saveProjectLocal(project);
+}
+
+/** Delete a project */
 export async function deleteProject(id: string): Promise<void> {
   try {
-    const db = await openDB();    await new Promise<void>((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');      const store = tx.objectStore(STORE_NAME);      store.delete(id);      tx.oncomplete = () => {        syncDeleteFromLocalStorage(id);        resolve();      };      tx.onerror = () => reject(tx.error);    });  } catch {    syncDeleteFromLocalStorage(id);
-}}function syncDeleteFromLocalStorage(id: string): void {
-  const projects = getProjectsFromLocalStorage();  const filtered = projects.filter((p) => p.id !== id);  localStorage.setItem('ozobek_usmonqulov_portfolio_projects', JSON.stringify(filtered));
-}/** * Get a single project by its ID. */
-export async function getProjectById(id: string): Promise<ProjectData | undefined> {
-  const projects = await getAllProjects();  return projects.find((p) => p.id === id);}/** * Toggle the hidden field of a project. */
+    const res = await fetch(`${API_BASE}/projects`, {
+      method: 'DELETE',
+      headers: apiHeaders(),
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) return;
+  } catch { /* fall through */ }
+  removeProjectLocal(id);
+}
+
+/** Toggle hidden status */
 export async function updateProjectHidden(id: string, hidden: boolean): Promise<void> {
   try {
-    const db = await openDB();    const tx = db.transaction(STORE_NAME, 'readonly');    const store = tx.objectStore(STORE_NAME);    const request = store.get(id);    return new Promise((resolve, reject) => {      request.onsuccess = async () => {
-        const project = request.result as ProjectData | undefined;        if (project) {          project.hidden = hidden;          await addProject(project);        };
-        resolve();      };      request.onerror = () => reject(request.error);    });  } catch {    // Fallback to localStorage
-const projects = getProjectsFromLocalStorage();    const project = projects.find((p) => p.id === id);    if (project) {      project.hidden = hidden;      localStorage.setItem('ozobek_usmonqulov_portfolio_projects', JSON.stringify(projects));
-}  }  }/** * Helper to read from localStorage as fallback. */function getProjectsFromLocalStorage(): ProjectData[] {
+    const res = await fetch(`${API_BASE}/projects`, {
+      method: 'PATCH',
+      headers: apiHeaders(),
+      body: JSON.stringify({ id, hidden }),
+    });
+    if (res.ok) return;
+  } catch { /* fall through */ }
+  toggleHiddenLocal(id, hidden);
+}
+
+/** Get single project */
+export async function getProjectById(id: string): Promise<ProjectData | undefined> {
+  const projects = await getAllProjects();
+  return projects.find((p) => p.id === id);
+}
+
+/** Initialize (no-op for API mode) */
+export async function initializeProjectsDB(): Promise<void> {}
+
+// ── Local fallback (IndexedDB + localStorage) ──
+
+const DB_NAME = 'ozobek_usmonqulov_portfolio_db';
+const STORE_NAME = 'projects';
+
+function openDB(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function getProjectsFromLocal(): ProjectData[] {
   try {
-    const raw = localStorage.getItem('ozobek_usmonqulov_portfolio_projects');    return raw ? JSON.parse(raw) : [];  } catch {
-    return [];  }}
+    const raw = localStorage.getItem('ozobek_usmonqulov_portfolio_projects');
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function syncToLocal(project: ProjectData): void {
+  const projects = getProjectsFromLocal();
+  const i = projects.findIndex((p) => p.id === project.id);
+  if (i >= 0) projects[i] = project;
+  else projects.unshift(project);
+  localStorage.setItem('ozobek_usmonqulov_portfolio_projects', JSON.stringify(projects));
+}
+
+async function saveProjectLocal(project: ProjectData): Promise<void> {
+  try {
+    const db = await openDB();
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).put(project);
+      tx.oncomplete = () => { syncToLocal(project); resolve(); };
+      tx.onerror = () => reject(tx.error);
+    });
+  } catch { syncToLocal(project); }
+}
+
+async function removeProjectLocal(id: string): Promise<void> {
+  try {
+    const db = await openDB();
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).delete(id);
+      tx.oncomplete = () => {
+        const projects = getProjectsFromLocal().filter((p) => p.id !== id);
+        localStorage.setItem('ozobek_usmonqulov_portfolio_projects', JSON.stringify(projects));
+        resolve();
+      };
+      tx.onerror = () => reject(tx.error);
+    });
+  } catch {
+    const projects = getProjectsFromLocal().filter((p) => p.id !== id);
+    localStorage.setItem('ozobek_usmonqulov_portfolio_projects', JSON.stringify(projects));
+  }
+}
+
+async function toggleHiddenLocal(id: string, hidden: boolean): Promise<void> {
+  try {
+    const db = await openDB();
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const request = tx.objectStore(STORE_NAME).get(id);
+    return new Promise((resolve) => {
+      request.onsuccess = async () => {
+        const project = request.result as ProjectData | undefined;
+        if (project) await saveProjectLocal({ ...project, hidden });
+        resolve();
+      };
+      request.onerror = () => resolve();
+    });
+  } catch {
+    const projects = getProjectsFromLocal();
+    const p = projects.find((p) => p.id === id);
+    if (p) { p.hidden = hidden; localStorage.setItem('ozobek_usmonqulov_portfolio_projects', JSON.stringify(projects)); }
+  }
+}
+

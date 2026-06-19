@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, type Variants } from "framer-motion";
 import { CheckCircle, Mail, MessageSquare, Phone, Send, XCircle } from "lucide-react";
+import { siteConfig } from "../config/site";
 import "./ContactSection.css";
 type ContactSectionProps = {
   visible: boolean;
@@ -31,7 +32,7 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await fetch("http://localhost:3001/api/contact", {
+      const res = await fetch(`${siteConfig.botUrl}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
