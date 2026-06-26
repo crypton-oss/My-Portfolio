@@ -21,7 +21,7 @@ export const siteConfig = {
 
 export const navLinks = [
   { label: 'Bosh saxifa', href: '#home' },
-  { label: "O'zim haqimda ", href: '#about' },
+  { label: "O'zim haqimda", href: '#about' },
   { label: 'Loyihalar', href: '#project' },
   { label: 'Konikmalar', href: '#skills' },
   { label: "Bog'lanish", href: '#contact' },

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, type Variants } from "framer-motion";
 import { CheckCircle, Mail, MessageSquare, Phone, Send, XCircle } from "lucide-react";
+import { useT } from "../i18n/LocaleContext";
 import { siteConfig } from "../config/site";
 import "./ContactSection.css";
 type ContactSectionProps = {
@@ -20,6 +21,7 @@ const itemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 export default function ContactSection({ theme, style }: ContactSectionProps) {
+  const { t } = useT()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -40,12 +42,12 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
       const body = await res.json().catch(() => ({}));
       if (res.ok) {
         setFormData({ name: "", email: "", phone: "", message: "" });
-        setToast({ type: "success", message: "Xabar muvaffaqiyatli yuborildi" });
+        setToast({ type: "success", message: t("contact.success") });
       } else {
-        setToast({ type: "error", message: body.error || "Xatolik yuz berdi. Qayta urinib ko'ring." });
+        setToast({ type: "error", message: body.error || t("contact.error") });
       }
     } catch {
-      setToast({ type: "error", message: "Serverga ulanib bo'lmadi. Bot ishlayotganiga ishonch hosil qiling." });
+      setToast({ type: "error", message: t("contact.server_error") });
     } finally {
       setSubmitting(false);
       setTimeout(() => setToast(null), 4500);
@@ -77,15 +79,14 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
           {" "}
           <div className="contact-heading__badge">
             {" "}
-            <span className="contact-heading__badge-dot" /> Bog'lanish{" "}
+            <span className="contact-heading__badge-dot" /> {t('contact.badge')}{" "}
           </div>{" "}
           <h2 className="contact-heading__title">
-            Keling birgalikda ajoyib narsa yarataylik
+            {t('contact.heading')}
           </h2>{" "}
           <p className="contact-heading__desc">
             {" "}
-            Loyihangiz haqida ma'lumot bering va men bir ish kuni ichida javob
-            beraman.{" "}
+            {t('contact.desc')}{" "}
           </p>{" "}
         </motion.div>{" "}
         <div className="contact-card">
@@ -109,19 +110,17 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
                 aria-hidden="true"
               >
                 {" "}
-                <span className="contact-info__pill-dot" /> 24 soat ichida
-                javob{" "}
+                <span className="contact-info__pill-dot" /> {t('contact.pill')}{" "}
               </motion.div>{" "}
               <div className="contact-info__text">
                 {" "}
-                <h3 className="contact-info__title">
-                  Loyihangiz haqida gapirib bering
-                </h3>{" "}
-                <p className="contact-info__desc">
-                  {" "}
-                  Maqsadlaringizni men bilan quring. Email
-                  orqali ham bog'lanishingiz mumkin:{" "}
-                  <a
+                  <h3 className="contact-info__title">
+                    {t('contact.info_title')}
+                  </h3>{" "}
+                  <p className="contact-info__desc">
+                    {" "}
+                    {t('contact.info_desc')}{" "}
+                    <a
                     href="mailto:ozodbekusmonqulov7777@gmail.com"
                     className="contact-info__link"
                   >
@@ -140,7 +139,7 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
                   />{" "}
                   <div>
                     {" "}
-                    <p className="contact-info-card__label">Email</p>{" "}
+                    <p className="contact-info-card__label">{t('contact.email_label')}</p>{" "}
                     <p>ozodbekusmonqulov7777@gmail.com</p>{" "}
                   </div>{" "}
                 </div>{" "}
@@ -152,7 +151,7 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
                   />{" "}
                   <div>
                     {" "}
-                    <p className="contact-info-card__label">Telefon</p>{" "}
+                    <p className="contact-info-card__label">{t('contact.phone_label')}</p>{" "}
                     <p>+998 (95) 254-98-86</p>{" "}
                   </div>{" "}
                 </div>{" "}
@@ -163,7 +162,7 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
                   </svg>{" "}
                   <div>
                     {" "}
-                    <p className="contact-info-card__label">Telegram</p>{" "}
+                    <p className="contact-info-card__label">{t('contact.telegram_label')}</p>{" "}
                     <p>@anonim_crypton</p>{" "}
                   </div>{" "}
                 </div>{" "}
@@ -177,13 +176,13 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
                 <div className="contact-field-group">
                   {" "}
                   <label htmlFor="name" className="contact-field-label">
-                    To'liq ism
+                    {t('contact.name_label')}
                   </label>{" "}
                   <input
                     id="name"
                     name="name"
                     type="text"
-                    placeholder="Ozodbek Usmonqulov"
+                    placeholder={t('contact.name_placeholder')}
                     value={formData.name}
                     onChange={handleChange}
                     className="contact-input"
@@ -193,7 +192,7 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
                 <div className="contact-field-group">
                   {" "}
                   <label htmlFor="email" className="contact-field-label">
-                    Email
+                    {t('contact.email_label')}
                   </label>{" "}
                   <div className="contact-input-wrap">
                     {" "}
@@ -205,7 +204,7 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="info@gmail.com"
+                      placeholder={t('contact.email_placeholder')}
                       value={formData.email}
                       onChange={handleChange}
                       className="contact-input contact-input--icon"
@@ -218,7 +217,7 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
               <div className="contact-field-group">
                 {" "}
                 <label htmlFor="phone" className="contact-field-label">
-                  Telefon raqam
+                  {t('contact.phone_field_label')}
                 </label>{" "}
                 <div className="contact-input-wrap">
                   {" "}
@@ -230,7 +229,7 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
                     id="phone"
                     name="phone"
                     type="tel"
-                    placeholder="+998 (99) 999-99-99"
+                    placeholder={t('contact.phone_placeholder')}
                     value={formData.phone}
                     onChange={handleChange}
                     className="contact-input contact-input--icon"
@@ -241,7 +240,7 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
               <div className="contact-field-group">
                 {" "}
                 <label htmlFor="message" className="contact-field-label">
-                  Xabar
+                  {t('contact.message_label')}
                 </label>{" "}
                 <div className="contact-input-wrap">
                   {" "}
@@ -252,7 +251,7 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
                   <textarea
                     id="message"
                     name="message"
-                    placeholder="Yaratmoqchi bolgan loyihangiz haqida qisqacha ma'lumot bering..."
+                    placeholder={t('contact.message_placeholder')}
                     value={formData.message}
                     onChange={handleChange}
                     className="contact-input contact-input--icon contact-input--textarea"
@@ -270,7 +269,7 @@ export default function ContactSection({ theme, style }: ContactSectionProps) {
                   ) : (
                     <Send className="contact-submit__icon" aria-hidden="true" />
                   )}
-                  <span>{submitting ? "Yuborilmoqda..." : "Xabarni yuborish"}</span>{" "}
+                  <span>{submitting ? t('contact.submitting') : t('contact.submit')}</span>{" "}
                 </button>{" "}
               </motion.div>{" "}
               {/* <p className="contact-privacy">

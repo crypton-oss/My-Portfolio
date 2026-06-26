@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { CheckCircle2 } from 'lucide-react'
+import { useT } from '../i18n/LocaleContext'
 import './AboutSection.css'
 
 type AboutSectionProps = {
@@ -9,52 +10,11 @@ type AboutSectionProps = {
   style?: React.CSSProperties
 }
 
-const timelineEvents = [
-  {
-    year: "2023",
-    title: "Computer Since",
-    description:
-      "Kampyuter asoslari.Word,Excel,PowerPoint va boshqa dasturlarni o'rganish va o'rnatish.",
-    icon: CheckCircle2,
-  },
-  {
-    year: "2024",
-    title: "Frontend Development",
-    description:
-      "HTML,CSS,JavaScript,React,Next.js va boshqa frontend texnologiyalar.",
-    icon: CheckCircle2,
-  },
-  {
-    year: "2025",
-    title: "Backend Development",
-    description:
-      "Python,Node.js,Django,Express.js va boshqa backend texnologiyalar.",
-    icon: CheckCircle2,
-  },
-  {
-    year: "2025",
-    title: "Cloud serverlar",
-    description:
-      "AWS,Azure,Google Cloud va boshqa cloud serverlarni o'rganish.",
-    icon: CheckCircle2,
-  },
-  {
-    year: "2026",
-    title: "AI Integration",
-    description:
-      "AI larni o'rganish,nazorat qilish  va Promte Enginering orqali AI lar orqali tizimlar qurish. ",
-    icon: CheckCircle2,
-  },
-   {
-    year: "2026",
-    title: "IELST Preparation",
-    description:
-      "IELST  sertifikatini olish uchun tayyorgarlik ko'rish va imtihon topshirish.",
-    icon: CheckCircle2,
-  },
-]
+const timelineKeys = ['computer', 'frontend', 'backend', 'cloud', 'ai', 'ielts'] as const
+const timelineYears = ['2023', '2024', '2025', '2025', '2026', '2026']
 
 export default function AboutSection({ visible, theme, style }: AboutSectionProps) {
+  const { t } = useT()
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, amount: 0.3 })
 
@@ -99,13 +59,13 @@ export default function AboutSection({ visible, theme, style }: AboutSectionProp
               />
 
               <div className="timeline-block__events">
-                {timelineEvents.map((event, index) => {
-                  const Icon = event.icon
+                {timelineKeys.map((key, index) => {
                   const isEven = index % 2 === 0
+                  const year = timelineYears[index]
 
                   return (
                     <motion.div
-                      key={event.year}
+                      key={year + key}
                       initial={{ opacity: 0, y: 30 }}
                       animate={
                         isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
@@ -125,7 +85,7 @@ export default function AboutSection({ visible, theme, style }: AboutSectionProp
                           animate={isInView ? { scale: 1 } : { scale: 0 }}
                           transition={{ delay: index * 0.2 + 0.3, type: "spring" }}
                         >
-                          <Icon className="timeline-block__node-icon" />
+                          <CheckCircle2 className="timeline-block__node-icon" />
                         </motion.div>
                         <motion.div
                           className="timeline-block__node-pulse"
@@ -147,9 +107,9 @@ export default function AboutSection({ visible, theme, style }: AboutSectionProp
                           <div className="timeline-block__card">
                             <div className="timeline-block__card-glow" />
                             <div className="timeline-block__card-content">
-                              <span className="timeline-block__card-year">{event.year}</span>
-                              <h3 className="timeline-block__card-title">{event.title}</h3>
-                              <p className="timeline-block__card-desc">{event.description}</p>
+                              <span className="timeline-block__card-year">{year}</span>
+                              <h3 className="timeline-block__card-title">{t(`about.milestones.${key}.title`)}</h3>
+                              <p className="timeline-block__card-desc">{t(`about.milestones.${key}.desc`)}</p>
                             </div>
                           </div>
                         </motion.div>
@@ -164,7 +124,7 @@ export default function AboutSection({ visible, theme, style }: AboutSectionProp
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ delay: timelineEvents.length * 0.2 + 0.5 }}
+              transition={{ delay: timelineKeys.length * 0.2 + 0.5 }}
               className="timeline-block__footer"
             >
               <div className="timeline-block__footer-inner">

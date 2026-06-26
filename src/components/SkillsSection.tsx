@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useT } from '../i18n/LocaleContext'
 import './SkillsSection.css'
 
 interface Skill {
@@ -9,17 +10,11 @@ interface Skill {
 
 type TabKey = 'languages' | 'systems' | 'programs' | 'databases'
 
-interface TabDef {
-  key: TabKey
-  label: string
-  icon: string
-}
-
-const TABS: TabDef[] = [
-  { key: 'languages', label: 'Full Stack', icon: 'code' },
-  { key: 'databases', label: "Ma'lumotlar bazalari", icon: 'database' },
-  { key: 'systems', label: 'Dev OPS & Cloud', icon: 'server' },
-  { key: 'programs', label: 'Dasturlar', icon: 'grid' },
+const TAB_KEYS: { key: TabKey; icon: string }[] = [
+  { key: 'languages', icon: 'code' },
+  { key: 'databases', icon: 'database' },
+  { key: 'systems', icon: 'server' },
+  { key: 'programs', icon: 'grid' },
 ]
 
 const SKILLS: Skill[] = [
@@ -59,6 +54,46 @@ const SKILLS: Skill[] = [
   { name: 'Figma', icon: 'figma', group: 'programs' },
   { name: 'Android Studio', icon: 'androidstudio', group: 'programs' },
 ]
+
+function TabIcon({ type }: { type: string }) {
+  switch (type) {
+    case 'code':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="16 18 22 12 16 6" />
+          <polyline points="8 6 2 12 8 18" />
+        </svg>
+      )
+    case 'database':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3" />
+          <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+        </svg>
+      )
+    case 'server':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+          <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+          <line x1="6" y1="6" x2="6.01" y2="6" />
+          <line x1="6" y1="18" x2="6.01" y2="18" />
+        </svg>
+      )
+    case 'grid':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}
 
 function SkillIcon({ name }: { name: string }) {
   switch (name) {
@@ -334,6 +369,7 @@ interface SkillsSectionProps {
 }
 
 export default function SkillsSection({ visible, theme, style }: SkillsSectionProps) {
+  const { t } = useT()
   const [activeTab, setActiveTab] = useState<TabKey>('languages')
   const [tappedCard, setTappedCard] = useState<string | null>(null)
   const prevTab = useRef<TabKey>('languages')
@@ -360,59 +396,27 @@ export default function SkillsSection({ visible, theme, style }: SkillsSectionPr
         <div className="skills-header">
           <div className="skills-header__badge">
             <span className="skills-header__badge-dot" />
-            Ko'nikmalar
+            {t('skills.badge')}
           </div>
           <h2 className="skills-header__title"></h2>
           <p className="skills-header__subtitle">
-            Men foydalanadigan texnologiyalar va dasturlash vositalari
+            {t('skills.subtitle')}
           </p>
         </div>
 
         <div className="skills-layout">
           {/* Left Sidebar Menu */}
           <nav className="skills-menu">
-            {TABS.map((tab) => (
+            {TAB_KEYS.map((tab) => (
               <button
                 key={tab.key}
-                className={`skills-menu__btn ${activeTab === tab.key ? 'skills-menu__btn--active' : ''}`}
                 onClick={() => handleTabChange(tab.key)}
+                className={`skills-menu__btn ${activeTab === tab.key ? 'skills-menu__btn--active' : ''}`}
               >
-                <span className="skills-menu__btn-icon" data-icon={tab.icon}>
-                  {tab.key === 'languages' && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="16 18 22 12 16 6" />
-                      <polyline points="8 6 2 12 8 18" />
-                    </svg>
-                  )}
-                  {tab.key === 'systems' && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="3" />
-                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                    </svg>
-                  )}
-                  {tab.key === 'databases' && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <ellipse cx="12" cy="5" rx="9" ry="3" />
-                      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
-                      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-                    </svg>
-                  )}
-                  {tab.key === 'programs' && (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="5" cy="5" r="2" />
-                      <circle cx="19" cy="5" r="2" />
-                      <circle cx="12" cy="5" r="2" />
-                      <circle cx="5" cy="12" r="2" />
-                      <circle cx="19" cy="12" r="2" />
-                      <circle cx="12" cy="12" r="2" />
-                      <circle cx="5" cy="19" r="2" />
-                      <circle cx="19" cy="19" r="2" />
-                      <circle cx="12" cy="19" r="2" />
-                    </svg>
-                  )}
+                <span className="skills-menu__btn-icon">
+                  <TabIcon type={tab.icon} />
                 </span>
-                <span className="skills-menu__btn-label">{tab.label}</span>
-                {activeTab === tab.key && <span className="skills-menu__btn-indicator" />}
+                <span className="skills-menu__btn-label">{t(`skills.${tab.key === 'databases' ? 'databases' : tab.key}`)}</span>
               </button>
             ))}
           </nav>

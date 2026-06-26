@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import ThemeToggle from './ThemeToggle'
+import LanguageSwitcher from './LanguageSwitcher'
+import { useT } from '../i18n/LocaleContext'
 import { navLinks, siteConfig } from '../config/site'
 import './Navbar.css'
 
@@ -10,9 +12,33 @@ type NavbarProps = {
 }
 
 export default function Navbar({ visible, theme, onToggleTheme }: NavbarProps) {
+  const { t } = useT()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [qaraOpen, setQaraOpen] = useState(false)
+  const qaraRef = useRef<HTMLLIElement>(null)
+
+  useEffect(() => {
+    if (!qaraOpen) return
+    const handler = (e: MouseEvent) => {
+      if (qaraRef.current && !qaraRef.current.contains(e.target as Node)) {
+        setQaraOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [qaraOpen])
 
   const closeMenu = () => setMenuOpen(false)
+
+  const labelMap: Record<string, string> = {
+    'Bosh saxifa': t('nav.home'),
+    "O'zim haqimda": t('nav.about'),
+    'Loyihalar': t('nav.projects'),
+    'Konikmalar': t('nav.skills'),
+    "Bog'lanish": t('nav.contact'),
+    'Download CV': t('nav.download_cv'),
+  }
+  const navLabel = (link: typeof navLinks[number]) => labelMap[link.label] ?? link.label
 
   return (
     <header className={`navbar ${visible ? 'navbar--visible' : ''}`}>
@@ -34,26 +60,56 @@ export default function Navbar({ visible, theme, onToggleTheme }: NavbarProps) {
           <span className="navbar__brand-name">{siteConfig.brand}</span>
         </a>
 
-        <nav className="navbar__links" aria-label="Main navigation">
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.label === 'Download CV' ? siteConfig.cvUrl : link.href}
-              className={`navbar__link ${'accent' in link && link.accent ? 'navbar__link--accent' : ''}`}
-              {...(link.label === 'Download CV' ? { download: true } : {})}
-            >
-              {link.label}
-            </a>
-          ))}
+        <nav className="navbar__links" aria-label={t('nav.home')}>
+          <ul className="navbar__link-list">
+            <li className="navbar__qara-item" ref={qaraRef}>
+              <button
+                type="button"
+                className={`navbar__qara-btn ${qaraOpen ? 'navbar__qara-btn--open' : ''}`}
+                onClick={() => setQaraOpen((v) => !v)}
+              >
+                Qara
+                <svg className="navbar__qara-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              <div className={`navbar__qara-drop ${qaraOpen ? 'navbar__qara-drop--open' : ''}`}>
+                <div className="navbar__qara-menu">
+                  {navLinks.filter(l => !('accent' in l)).map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      className="navbar__qara-link"
+                      onClick={() => setQaraOpen(false)}
+                    >
+                      {navLabel(link)}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </li>
+            {navLinks.map((link) => (
+              <li key={link.label}>
+                <a
+                  href={'accent' in link && link.accent ? siteConfig.cvUrl : link.href}
+                  className={`navbar__link ${'accent' in link && link.accent ? 'navbar__link--accent' : ''}`}
+                  {...('accent' in link && link.accent ? { download: true } : {})}
+                >
+                  {navLabel(link)}
+                </a>
+              </li>
+            ))}
+          </ul>
         </nav>
 
         <div className="navbar__actions">
+          <LanguageSwitcher />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
 
           <button
             className={`navbar__hamburger ${menuOpen ? 'navbar__hamburger--open' : ''}`}
             onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Toggle menu"
+            aria-label={t('nav.home')}
             aria-expanded={menuOpen}
           >
             <span className="navbar__hamburger-line" />
@@ -97,12 +153,12 @@ export default function Navbar({ visible, theme, onToggleTheme }: NavbarProps) {
           {navLinks.map((link) => (
             <a
               key={link.label}
-              href={link.label === 'Download CV' ? siteConfig.cvUrl : link.href}
+              href={'accent' in link && link.accent ? siteConfig.cvUrl : link.href}
               className={`navbar__drawer-link ${'accent' in link && link.accent ? 'navbar__drawer-link--accent' : ''}`}
-              {...(link.label === 'Download CV' ? { download: true } : {})}
+              {...('accent' in link && link.accent ? { download: true } : {})}
               onClick={closeMenu}
             >
-              {link.label}
+              {navLabel(link)}
             </a>
           ))}
         </div>

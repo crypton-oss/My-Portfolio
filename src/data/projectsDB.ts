@@ -5,6 +5,7 @@ export interface ProjectData {
   id: string;
   name: string;
   description: string;
+  descriptions?: Record<string, string>;
   image: string;
   languages: Array<{ id: string; name: string }>;
   hideCode: boolean;

@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import RepoCodeViewer from './RepoCodeViewer';
 import { getAllProjects, initializeProjectsDB } from '../data/projectsDB';
 import { getLangIcon } from '../data/langIcons';
+import { useT } from '../i18n/LocaleContext';
 import './ProjectsSection.css';
 
 interface Project {
   id: string;
   name: string;
   description: string;
+  descriptions?: Record<string, string>;
   image: string;
   languages: Array<{ id: string; name: string }>;
   hideCode: boolean;
@@ -23,6 +25,7 @@ interface ProjectsSectionProps {
 export default function ProjectsSection({ visible, theme, style }: ProjectsSectionProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
+  const { locale } = useT();
 
   const loadProjects = async () => {
     await initializeProjectsDB();
@@ -67,7 +70,7 @@ export default function ProjectsSection({ visible, theme, style }: ProjectsSecti
               </div>
               <div className="project-card-info">
                 <h3 className="project-card-title">{project.name}</h3>
-                <p className="project-card-desc">{project.description}</p>
+                <p className="project-card-desc">{project.descriptions?.[locale] || project.description}</p>
                 
                 {/* Languages list tags */}
                 <div className="project-card-langs">

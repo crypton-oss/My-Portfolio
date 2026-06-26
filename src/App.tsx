@@ -10,6 +10,7 @@ import IosLoginScreen from './components/IosLoginScreen'
 import AdminPanel from './components/AdminPanel'
 import FakeAdminLogin from './components/FakeAdminLogin'
 import useDeviceTracking from './hooks/useDeviceTracking'
+import { LocaleProvider } from './i18n/LocaleContext'
 import './App.css'
 
 const LOADING_DURATION = 3500
@@ -135,6 +136,7 @@ function App() {
   const contactStyle = scrollStyle(4)
 
   return (
+    <LocaleProvider>
     <div className={`app app--${theme}`}>
 
       {/* Fake Admin Face Login Route (trap page at /admin) */}
@@ -201,6 +203,7 @@ function App() {
         </>
       )}
     </div>
+    </LocaleProvider>
   )
 }
 

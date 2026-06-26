@@ -57,7 +57,9 @@ export function AddProjectModal({
   fullPage = false,
 }: AddProjectModalProps) {
   const [name, setName] = useState(repoName);
-  const [description, setDescription] = useState(repoDescription || '');
+  const [descUz, setDescUz] = useState('');
+  const [descRu, setDescRu] = useState('');
+  const [descEn, setDescEn] = useState(repoDescription || '');
   const [image, setImage] = useState<string>(''); // Base64 image
 
   // Languages selection
@@ -111,11 +113,18 @@ export function AddProjectModal({
       setProgress(p);
     }
 
+    // Build descriptions object
+    const descriptions: Record<string, string> = {};
+    if (descUz.trim()) descriptions.uz = descUz.trim();
+    if (descRu.trim()) descriptions.ru = descRu.trim();
+    if (descEn.trim()) descriptions.en = descEn.trim();
+
     // Prepare project object
     const newProject = {
       id: Date.now().toString(),
       name,
-      description,
+      description: descEn.trim() || descUz.trim() || descRu.trim() || '',
+      descriptions,
       image: image || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format&fit=crop',
       languages: selectedLangs.map((lang) => ({ id: lang.id, name: lang.name })),
       hideCode: !isPublic,
@@ -184,14 +193,32 @@ export function AddProjectModal({
               />
             </div>
 
-            {/* Project Description */}
+            {/* Project Description — 3 languages */}
             <div className="form-group">
-              <label className="form-label">Loyiha haqida (Description)</label>
+              <label className="form-label">Tavsif (O'zbekcha)</label>
               <textarea
                 className="connect-modal__input form-textarea"
-                rows={3}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                rows={2}
+                value={descUz}
+                onChange={(e) => setDescUz(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Описание (Русский)</label>
+              <textarea
+                className="connect-modal__input form-textarea"
+                rows={2}
+                value={descRu}
+                onChange={(e) => setDescRu(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Description (English)</label>
+              <textarea
+                className="connect-modal__input form-textarea"
+                rows={2}
+                value={descEn}
+                onChange={(e) => setDescEn(e.target.value)}
                 required
               />
             </div>

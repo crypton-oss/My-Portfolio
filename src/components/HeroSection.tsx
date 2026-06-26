@@ -2,6 +2,7 @@ import InteractiveDots from './InteractiveDots'
 import TextAnimate from './TextAnimate'
 import TechIconMarquee from './TechIconMarquee'
 import HoverIconButton from './HoverIconButton'
+import { useT } from '../i18n/LocaleContext'
 import { siteConfig } from '../config/site'
 import './HeroSection.css'
 
@@ -12,6 +13,7 @@ type HeroSectionProps = {
 }
 
 export default function HeroSection({ visible, theme, style }: HeroSectionProps) {
+  const { t } = useT()
   const dotsBg = theme === 'dark' ? '#000000' : '#F0EEE6'
   const dotsColor = theme === 'dark' ? '#888888' : '#666666'
 
@@ -36,7 +38,7 @@ export default function HeroSection({ visible, theme, style }: HeroSectionProps)
             <div className="hero-section__actions">
               <HoverIconButton
                 href={siteConfig.cvUrl}
-                label="Download CV"
+                label={t('hero.download_cv')}
                 variant="accent"
                 download
                 icon={
