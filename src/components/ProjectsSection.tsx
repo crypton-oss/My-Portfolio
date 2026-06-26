@@ -25,7 +25,7 @@ interface ProjectsSectionProps {
 export default function ProjectsSection({ visible, theme, style }: ProjectsSectionProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
-  const { locale } = useT();
+  const { locale, t } = useT();
 
   const loadProjects = async () => {
     await initializeProjectsDB();
@@ -49,11 +49,11 @@ export default function ProjectsSection({ visible, theme, style }: ProjectsSecti
         <div className="about-header">
           <div className="about-header__badge">
             <span className="about-header__badge-dot animate-pulse" />
-            Loyihalarim
+            {t('projects.badge')}
           </div>
           <h2 className="about-header__title"></h2>
           <p className="about-header__subtitle">
-            Yaratgan va ishlab chiqqan asosiy dasturiy mahsulotlarim ro'yxati
+            {t('projects.subtitle')}
           </p>
         </div>
 

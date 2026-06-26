@@ -51,6 +51,10 @@ const translations: Record<Locale, DeepRecord> = {
         },
       },
     },
+    projects: {
+      badge: 'Loyihalarim',
+      subtitle: "Yaratgan va ishlab chiqqan asosiy dasturiy mahsulotlarim ro'yxati",
+    },
     skills: {
       badge: "Ko'nikmalar",
       subtitle: 'Men foydalanadigan texnologiyalar va dasturlash vositalari',
@@ -143,6 +147,10 @@ const translations: Record<Locale, DeepRecord> = {
         },
       },
     },
+    projects: {
+      badge: 'Мои проекты',
+      subtitle: 'Список основных программных продуктов, которые я создал и разработал',
+    },
     skills: {
       badge: 'Навыки',
       subtitle: 'Технологии и инструменты, которые я использую',
@@ -234,6 +242,10 @@ const translations: Record<Locale, DeepRecord> = {
           desc: 'Preparing for and taking the IELTS certification exam.',
         },
       },
+    },
+    projects: {
+      badge: 'My Projects',
+      subtitle: 'List of main software products I created and developed',
     },
     skills: {
       badge: 'Skills',
